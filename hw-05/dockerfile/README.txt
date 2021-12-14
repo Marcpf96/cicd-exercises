@@ -1,0 +1,1 @@
+Para su correcto funcionamiento, el dockerfile debería estar en el mismo nivel que la carpeta del proyecto (mw002) para que así el ADD funcione de manera correcta 

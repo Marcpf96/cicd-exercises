@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: hello-world-kubernetes
+  labels:
+    app: hello-world-kubernetes
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world-kubernetes
+  template:
+    metadata:
+      labels: 
+        app: hello-world-kubernetes
+    spec:
+      containers:
+      - image: topmasses/spring-hello-world:0.0.2
+        name: hello-world-kubernetes
+        ports:
+        - containerPort: 8082
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+

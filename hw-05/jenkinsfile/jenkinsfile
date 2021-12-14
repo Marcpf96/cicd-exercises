@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+	
+    tools {
+        maven 'Maven 3.8.4' 
+        jdk 'jdk8' 
+    }
+
+    stages {
+        stage('Build and test') {
+            steps {
+                git branch: 'development', url: 'https://github.com/Marcpf96/spring-hello-world/'
+                try{
+					sh "mvn clean package"
+				}catch (Exception err){
+					echo "err"
+					error "Program failed, please read logs"
+				}
+            }
+
+            post {
+                success {
+                    junit 'mw002/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
+                }
+            }
+        }
+		def version = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
+		stage('Delivery') {
+			docker login --username topmasses
+			docker build -t topmasses/spring-hello-world:${version} --build-arg VERSION=${version} .
+			docker push topmasses/spring-hello-world:${version}
+			git commit -m "Automated delivery by jenkins"
+			git push -u origin master
+		}
+		stage('Deployment') {
+		
+			kubectl patch deployment hello-world-kubernetes -p '{"spec":{"template":{"spec":{"containers":[{"name":"hello-world-kubernetes","image": "topmasses/spring-hello-world:${version}"}]}}}}'
+		
+		}
+    }
+}

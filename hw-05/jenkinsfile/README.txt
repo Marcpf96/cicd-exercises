@@ -1,0 +1,1 @@
+Hay dos jenkinsfile, uno con la sintaxis que debería seguir, y otro remplazando comillas dobles por comillas simples y quitando variables como ${version} para que pudieran funcionar los echos
